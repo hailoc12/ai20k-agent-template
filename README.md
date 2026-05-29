@@ -1,106 +1,143 @@
-# [Tên Dự Án]
+# 🤖 AI20K Agent Template
 
-> Tóm tắt 1 câu: [Vấn đề] → [Giải pháp AI] cho [Target User]
+Template chính thức cho học viên **VinUni AI20K Build Phase** — cung cấp sẵn cấu trúc dự án, code mẫu, và hướng dẫn kỹ thuật chi tiết để xây dựng AI Agent đạt điểm cao (35+/50).
 
-## Vấn đề (Problem)
+> 📖 **Technical Guidebook (xem online):** [hailoc12.github.io/ai20k-technical-guidebook](https://hailoc12.github.io/ai20k-technical-guidebook/)
 
-Mô tả pain point cụ thể với data/số liệu:
-- Ai đang gặp vấn đề?
-- Vấn đề tốn bao nhiêu thời gian/tiền?
-- Tại sao các giải pháp hiện tại chưa đủ?
+## 🎯 Template này dùng để làm gì?
 
-## Giải pháp (Solution)
+Khi tham gia AI20K Build Phase, mỗi đội cần xây dựng một AI Agent hoàn chỉnh — từ kiến trúc, code, test, đến deploy. Thay vì bắt đầu từ con số không, template này cung cấp:
 
-Sản phẩm giải quyết vấn đề như thế nào bằng AI:
-- Feature 1: [mô tả]
-- Feature 2: [mô tả]
-- Feature 3: [mô tả]
+- **Cấu trúc thư mục chuẩn** — đã được thiết kế theo best practices (separation of concerns)
+- **Code mẫu** cho các phần cốt lõi: LangGraph agent, FastAPI API, config, schemas
+- **Docker + CI/CD sẵn** — Dockerfile multi-stage, GitHub Actions workflow
+- **Hướng dẫn kỹ thuật 10 chương** — từ clone template đến nộp bài Demo Day
+- **Checklist 10 deliverables** — đảm bảo không bỏ sót yêu cầu BTC
 
-## Target User
+## ⚡ Quick Start
 
-- Primary: [mô tả user chính]
-- Secondary: [mô tả user phụ]
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| AI Agent | LangGraph + [LLM] |
-| Backend | FastAPI + Python 3.11+ |
-| Frontend | React/Next.js + TypeScript |
-| Database | PostgreSQL / SQLite |
-| DevOps | Docker + GitHub Actions |
-
-## Quick Start
+### Bước 1: Fork hoặc Clone
 
 ```bash
-# 1. Clone repo
-git clone https://github.com/a20-ai-thuc-chien/A20-App-XXX.git
-cd A20-App-XXX
+# Clone template
+git clone https://github.com/hailoc12/ai20k-agent-template.git team-YOUR_TEAM_NAME
+cd team-YOUR_TEAM_NAME
 
-# 2. Setup environment
-cp .env.example .env
-# Edit .env with your API keys
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Run development server
-uvicorn src.main:app --reload
+# Xóa git history cũ và khởi tạo lại
+rm -rf .git
+git init
+git add .
+git commit -m "feat: khởi tạo dự án từ template"
 ```
 
-## Project Structure
+### Bước 2: Setup môi trường
+
+```bash
+# Tạo virtual environment
+python3.11 -m venv .venv
+source .venv/bin/activate
+
+# Cài dependencies
+pip install -e ".[dev]"
+
+# Cấu hình API keys
+cp .env.example .env
+# Mở .env và thêm OPENAI_API_KEY của bạn
+```
+
+### Bước 3: Chạy server
+
+```bash
+# Chạy FastAPI backend
+uvicorn src.main:app --reload --port 8000
+
+# Mở Swagger UI
+# http://localhost:8000/docs
+```
+
+### Bước 4: Đọc hướng dẫn
+
+📖 Mở **[Technical Guidebook](https://hailoc12.github.io/ai20k-technical-guidebook/)** và làm theo từng chương.
+
+## 📁 Cấu trúc dự án
 
 ```
 ├── src/
-│   ├── agents/          # LangGraph agent definitions
-│   │   ├── graph.py     # Main graph (nodes + edges)
-│   │   ├── state.py     # State schema
-│   │   ├── nodes/       # Individual nodes
-│   │   └── tools/       # Agent tools
-│   ├── api/             # FastAPI routes
-│   ├── models/          # Pydantic schemas
-│   ├── services/        # Business logic
-│   ├── config.py        # Settings
-│   └── main.py          # App entry point
-├── tests/               # Test suite
-├── docs/                # Documentation
-├── eval/                # Evaluation results
-├── presentation/        # Demo materials
-├── Dockerfile           # Multi-stage build
-├── docker-compose.yml   # Full stack
-└── .github/workflows/   # CI/CD pipelines
+│   ├── agents/           # 🧠 LangGraph Agent
+│   │   ├── graph.py      #    State graph (nodes + edges)
+│   │   ├── state.py      #    State schema (TypedDict)
+│   │   ├── nodes/        #    Node functions
+│   │   └── tools/        #    Agent tools (@tool)
+│   ├── api/              # 🌐 FastAPI Backend
+│   │   └── routes.py     #    API endpoints
+│   ├── models/           # 📋 Pydantic schemas
+│   ├── services/         # 🔧 Business logic (LLM, etc.)
+│   ├── config.py         # ⚙️ Pydantic Settings
+│   └── main.py           # 🚀 App entry point
+├── tests/                # 🧪 pytest suite
+│   ├── test_agents/      #    Agent/graph tests
+│   └── test_api/         #    API endpoint tests
+├── docs/
+│   ├── guide/            # 📖 Technical Guidebook (10 chapters)
+│   └── architecture_diagram.md
+├── eval/                 # 📊 Evaluation results
+├── presentation/         # 🎤 Demo Day slides
+├── .github/workflows/    # ⚡ CI/CD (GitHub Actions)
+├── Dockerfile            # 🐳 Multi-stage build
+├── docker-compose.yml    # 🐙 Full stack orchestration
+└── README_boilerplate.md # 📝 README template cho đội của bạn
 ```
 
-## API Endpoints
+## 📚 Technical Guidebook — 10 Chương
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | /health | Health check |
-| POST | /api/v1/chat | Chat with agent |
-| POST | /api/v1/analyze | Analyze input |
+| Chương | Nội dung | Thời gian |
+|---------|----------|-----------|
+| 1 | Lời mở đầu — Mục tiêu, cách sử dụng | 15 phút |
+| 2 | Khởi tạo dự án — Clone, setup, git workflow | 4 giờ |
+| 3 | Thiết kế kiến trúc — 3-tier, diagrams, ADR | 6 giờ |
+| 4 | **LangGraph Agent** — State, nodes, edges, tools, RAG | 8 giờ |
+| 5 | FastAPI — Routes, validation, error handling, streaming | 6 giờ |
+| 6 | Giao diện — Next.js + Streamlit quickstart | 6 giờ |
+| 7 | DevOps — Docker, CI/CD, deploy, logging | 6 giờ |
+| 8 | Kiểm thử — Unit test, integration test, RAGAS | 4 giờ |
+| 9 | Demo Day — 10 deliverables, checklist, tips | 2 giờ |
+| 10 | Tài nguyên — Khóa học, docs, BMAD method | tham khảo |
 
-## Deliverables Checklist
+📖 **Đọc online:** [hailoc12.github.io/ai20k-technical-guidebook](https://hailoc12.github.io/ai20k-technical-guidebook/)
 
-- [x] Source Code (GitHub)
-- [x] README.md
-- [x] Architecture Diagram (`docs/architecture_diagram.md`)
-- [x] AI Logs (auto-collected)
-- [ ] Live URL / Deploy
-- [ ] Video Demo
-- [ ] Pitch Deck (`presentation/`)
-- [x] Weekly Journal (`JOURNAL.md`)
-- [x] Worklog (`WORKLOG.md`)
-- [ ] Evaluation Evidence (`eval/results/`)
+## 📋 10 Deliverables cho Demo Day
 
-## Team
+| # | Deliverable | File vị trí | Template có sẵn |
+|---|-------------|-------------|:---:|
+| 1 | Source Code | `src/` | ✅ |
+| 2 | README.md | `README_boilerplate.md` → copy thành `README.md` | ✅ |
+| 3 | Architecture Diagram | `docs/architecture_diagram.md` | ✅ |
+| 4 | AI Logs | LangSmith (3 env vars) | ✅ |
+| 5 | Live URL | Deploy lên Render/Vercel | ⚡ CI/CD sẵn |
+| 6 | Video Demo | `presentation/` | 📝 |
+| 7 | Pitch Deck | `presentation/` | 📝 |
+| 8 | Development Journal | `JOURNAL.md` | ✅ |
+| 9 | Worklog | `WORKLOG.md` | ✅ |
+| 10 | Evaluation Evidence | `eval/` | 📝 |
 
-| Member | Role | Student ID |
-|--------|------|-----------|
-| [Name] | [Role] | [ID] |
-| [Name] | [Role] | [ID] |
-| [Name] | [Role] | [ID] |
+## 🛠 Tech Stack
 
-## License
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| AI Agent | LangGraph + LangChain | Latest |
+| Backend | FastAPI + Uvicorn | 0.100+ |
+| LLM | OpenAI GPT-4o-mini | API |
+| Frontend | Next.js / Streamlit | 14+ / 1.30+ |
+| Database | SQLite (dev) / PostgreSQL (prod) | — |
+| DevOps | Docker + GitHub Actions | — |
+| Testing | pytest + pytest-asyncio | 8+ |
 
-MIT
+## 🔗 Liên kết
+
+- 📖 **Technical Guidebook:** [hailoc12.github.io/ai20k-technical-guidebook](https://hailoc12.github.io/ai20k-technical-guidebook/)
+- 🏫 **AI20K Program:** VinUni AI20K Build Phase
+- 👨‍🏫 **Mentor:** Đặng Hải Lộc
+
+## 📄 License
+
+MIT — Sử dụng tự do cho mục đích giáo dục.
