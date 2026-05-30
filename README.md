@@ -13,6 +13,7 @@ Khi tham gia AI20K Build Phase, mỗi đội cần xây dựng một AI Agent ho
 - **Docker + CI/CD sẵn** — Dockerfile multi-stage, GitHub Actions workflow
 - **Hướng dẫn kỹ thuật 10 chương** — từ clone template đến nộp bài Demo Day
 - **Checklist 10 deliverables** — đảm bảo không bỏ sót yêu cầu BTC
+- **AI Usage Logging tự động** — Pre-configured hooks cho Claude Code, Cursor, Codex, Gemini CLI, Antigravity, và GitHub Copilot
 
 ## ⚡ Quick Start
 
@@ -45,7 +46,19 @@ cp .env.example .env
 # Mở .env và thêm OPENAI_API_KEY của bạn
 ```
 
-### Bước 3: Chạy server
+### Bước 3: Cài AI Logging Hooks
+
+```bash
+# Linux / macOS / Git Bash
+bash scripts/setup_hooks.sh
+
+# Windows PowerShell
+# powershell -ExecutionPolicy Bypass -File scripts\setup_hooks.ps1
+```
+
+Hooks tự động log mọi AI prompt khi dùng Claude Code, Cursor, Codex, Gemini CLI, Antigravity, hoặc GitHub Copilot. Không cần thao tác thủ công.
+
+### Bước 4: Chạy server
 
 ```bash
 # Chạy FastAPI backend
@@ -55,7 +68,7 @@ uvicorn src.main:app --reload --port 8000
 # http://localhost:8000/docs
 ```
 
-### Bước 4: Đọc hướng dẫn
+### Bước 5: Đọc hướng dẫn
 
 📖 Mở **[Technical Guidebook](https://hailoc12.github.io/ai20k-technical-guidebook/)** và làm theo từng chương.
 
@@ -77,12 +90,22 @@ uvicorn src.main:app --reload --port 8000
 ├── tests/                # 🧪 pytest suite
 │   ├── test_agents/      #    Agent/graph tests
 │   └── test_api/         #    API endpoint tests
+├── scripts/              # 🔌 AI Logging Hooks
+│   ├── log_hook.py       #    Auto-log cho Claude/Cursor/Codex/Gemini/Copilot
+│   ├── log_antigravity.py#    Antigravity IDE prompt scanner
+│   ├── log_manual.py     #    Manual log cho ChatGPT / web tools
+│   ├── submit_log.py     #    Submit logs on git push
+│   └── setup_hooks.sh    #    One-time hook installer
+├── .claude/ .codex/ .cursor/ .gemini/  # Per-tool hook configs
+├── .agents/              # Antigravity rules + workflows
+├── .ai-log/              # 📊 AI usage logs (auto-generated)
 ├── docs/
 │   ├── guide/            # 📖 Technical Guidebook (10 chapters)
 │   └── architecture_diagram.md
 ├── eval/                 # 📊 Evaluation results
 ├── presentation/         # 🎤 Demo Day slides
 ├── .github/workflows/    # ⚡ CI/CD (GitHub Actions)
+├── .github/hooks/        # 🪝 Copilot hook config
 ├── Dockerfile            # 🐳 Multi-stage build
 ├── docker-compose.yml    # 🐙 Full stack orchestration
 └── README_boilerplate.md # 📝 README template cho đội của bạn
@@ -112,7 +135,7 @@ uvicorn src.main:app --reload --port 8000
 | 1 | Source Code | `src/` | ✅ |
 | 2 | README.md | `README_boilerplate.md` → copy thành `README.md` | ✅ |
 | 3 | Architecture Diagram | `docs/architecture_diagram.md` | ✅ |
-| 4 | AI Logs | LangSmith (3 env vars) | ✅ |
+| 4 | AI Logs | LangSmith (3 env vars) + Auto AI Usage Logging | ✅ |
 | 5 | Live URL | Deploy lên Render/Vercel | ⚡ CI/CD sẵn |
 | 6 | Video Demo | `presentation/` | 📝 |
 | 7 | Pitch Deck | `presentation/` | 📝 |
@@ -131,6 +154,28 @@ uvicorn src.main:app --reload --port 8000
 | Database | SQLite (dev) / PostgreSQL (prod) | — |
 | DevOps | Docker + GitHub Actions | — |
 | Testing | pytest + pytest-asyncio | 8+ |
+
+## 📊 AI Usage Logging
+
+Template đã tích hợp sẵn auto-logging hooks cho 6 AI tools:
+
+| Tool | Cơ chế | Config |
+|------|--------|--------|
+| Claude Code | `.claude/settings.json` hooks | Tự động |
+| Cursor | `.cursor/hooks.json` | Tự động |
+| OpenAI Codex CLI | `.codex/hooks.json` | Tự động |
+| Gemini CLI | `.gemini/settings.json` | Tự động |
+| GitHub Copilot | `.github/hooks/hooks.json` | Tự động |
+| Antigravity IDE | Pre-push scan transcript | Tự động trên `git push` |
+
+Tất cả prompts và tool calls được log vào `.ai-log/session.jsonl` và tự động submit lên grading server mỗi khi `git push`.
+
+**ChatGPT / web tools khác** — log thủ công:
+```bash
+bash scripts/_pyrun.sh scripts/log_manual.py --tool chatgpt --prompt "What you asked"
+```
+
+> ⚠️ Chạy `bash scripts/setup_hooks.sh` một lần sau khi clone để cài pre-push hook.
 
 ## 🔗 Liên kết
 

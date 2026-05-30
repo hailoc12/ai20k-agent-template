@@ -54,3 +54,7 @@ out/
 # Build
 *.pyc
 *.pyo
+
+# AI logs — tracked structure, ignored content
+.ai-log/*.jsonl
+.ai-log/archive/
