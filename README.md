@@ -177,6 +177,31 @@ bash scripts/_pyrun.sh scripts/log_manual.py --tool chatgpt --prompt "What you a
 
 > ⚠️ Chạy `bash scripts/setup_hooks.sh` một lần sau khi clone để cài pre-push hook.
 
+## 📖 Đọc Technical Guidebook
+
+**Online:** [hailoc12.github.io/ai20k-technical-guidebook](https://hailoc12.github.io/ai20k-technical-guidebook/)
+
+**Local (Hugo):**
+```bash
+# Cài Hugo Extended (macOS)
+brew install hugo-extended
+
+# Cài Hugo Extended (Windows)
+# winget install Hugo.Hugo.Extended
+
+# Clone guidebook repo (nằm cùng cấp với project)
+cd ..
+git clone https://github.com/hailoc12/ai20k-technical-guidebook.git
+cd ai20k-technical-guidebook
+
+# Chạy local server
+hugo server -D
+
+# Mở trình duyệt: http://localhost:1313
+```
+
+> 💡 Guidebook dùng theme [Hextra](https://imfing.github.io/hextra/) — Hugo Extended required.
+
 ## 🔗 Liên kết
 
 - 📖 **Technical Guidebook:** [hailoc12.github.io/ai20k-technical-guidebook](https://hailoc12.github.io/ai20k-technical-guidebook/)

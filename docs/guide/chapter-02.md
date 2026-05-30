@@ -550,10 +550,94 @@ Sau khi hoàn thành tất cả các bước trong chương này, bạn nên có
 4. Server chạy được trên localhost, Swagger UI accessible.
 5. README đã cập nhật với thông tin đội.
 6. Branch `develop` đã tạo, ít nhất 1 commit trên `develop`.
+7. AI Logging Hooks đã cài đặt (xem phần dưới).
 
-Nếu bạn đã có đủ 6 mục trên, bạn đang đi đúng hướng. Sang Chương 3, chúng ta sẽ thiết kế kiến trúc hệ thống — quyết định quan trọng nhất ảnh hưởng đến toàn bộ dự án.
+Nếu bạn đã có đủ 7 mục trên, bạn đang đi đúng hướng. Sang Chương 3, chúng ta sẽ thiết kế kiến trúc hệ thống — quyết định quan trọng nhất ảnh hưởng đến toàn bộ dự án.
 
 > ⚠️ **LƯU Ý:** Đừng vội bắt đầu viết Agent logic ngay. Template có sẵn placeholder code trong `src/agent/` — để yên cho đến khi bạn hoàn thành thiết kế kiến trúc ở Chương 3. Code mà không có thiết kế là code mà bạn sẽ phải viết lại. Kinh nghiệm cho thấy: các đội thiết kế trước khi code luôn có kết quả tốt hơn đáng kể so với các đội "code first, design later."
+
+## Cài đặt AI Usage Logging Hooks
+
+Template tích hợp sẵn hệ thống auto-logging — ghi lại mọi prompt và tool call khi bạn dùng AI coding tools. Đây là yêu cầu bắt buộc của chương trình: BTC cần theo dõi việc sử dụng AI tools của các đội.
+
+### Tại sao cần AI Logging?
+
+- **Transparency** — Minh bạch về việc sử dụng AI trong quá trình phát triển
+- **Grading** — BTC sử dụng data này để đánh giá phần "AI Usage" trong rubric
+- **Self-reflection** — Giúp đội xem lại pattern sử dụng AI của mình (tool nào dùng nhiều, prompt nào hiệu quả)
+
+### Chạy setup (bắt buộc — 1 lần duy nhất)
+
+```bash
+# Linux / macOS / Git Bash
+bash scripts/setup_hooks.sh
+
+# Windows PowerShell
+# powershell -ExecutionPolicy Bypass -File scripts\setup_hooks.ps1
+```
+
+Lệnh này cài git pre-push hook và tạo thư mục `.ai-log/`. Sau khi chạy, mọi AI tool dưới đây sẽ tự động log — không cần thao tác thêm.
+
+### 6 AI tools được hỗ trợ tự động
+
+| Tool | Cơ chế | Khi nào log |
+|------|--------|-------------|
+| **Claude Code** | `.claude/settings.json` hooks | Mỗi prompt + mỗi tool call |
+| **Cursor** | `.cursor/hooks.json` | Mỗi prompt + khi stop |
+| **OpenAI Codex CLI** | `.codex/hooks.json` | Mỗi prompt + khi stop |
+| **Gemini CLI** | `.gemini/settings.json` | BeforeAgent + AfterModel + SessionEnd |
+| **GitHub Copilot** | `.github/hooks/hooks.json` | Mỗi prompt + khi session end |
+| **Antigravity IDE** | Pre-push scan transcript | Tự động quét transcript khi `git push` |
+
+### Cách hoạt động
+
+```
+Bạn dùng AI tool (Claude Code, Cursor, v.v.)
+        ↓
+Hook tự động capture prompt + metadata
+        ↓
+Append vào .ai-log/session.jsonl
+        ↓
+git push → pre-push hook submit lên grading server
+```
+
+Metadata được log bao gồm: timestamp, tool name, model, repo, branch, commit, student email, prompt text, tool response.
+
+### Log thủ công cho web tools
+
+Nếu dùng ChatGPT, Claude.ai, Gemini Web, hoặc tool không có hook:
+
+```bash
+# Interactive (script sẽ hỏi tool + prompt)
+bash scripts/_pyrun.sh scripts/log_manual.py
+
+# One-line
+bash scripts/_pyrun.sh scripts/log_manual.py --tool chatgpt --prompt "Brainstorm UI layout"
+bash scripts/_pyrun.sh scripts/log_manual.py --tool gemini-web --prompt "Research scoring algorithms"
+```
+
+### Cấu hình `.env`
+
+Template đã có sẵn trong `.env.example`:
+
+```env
+AI_LOG_SERVER=https://ai-logs.note.transformerlabs.ai/api/ingest
+AI_LOG_API_KEY=<giáo viên sẽ cung cấp>
+AI_LOG_DIR=.ai-log
+```
+
+Copy từ `.env.example` sang `.env` và điền `AI_LOG_API_KEY` do instructor cấp.
+
+### Troubleshooting
+
+| Vấn đề | Nguyên nhân | Cách fix |
+|---------|-------------|----------|
+| Hooks không log | Chưa chạy `setup_hooks.sh` | Chạy lại `bash scripts/setup_hooks.sh` |
+| `python3: not found` | Thiếu Python trên PATH | `brew install python3` (macOS) hoặc cài từ python.org (Windows) |
+| Submit failed | Sai `AI_LOG_API_KEY` hoặc không có network | Kiểm tra `.env`, logs vẫn giữ locally |
+| Antigravity không log | Chưa có transcript | Chắc chắn dùng Antigravity IDE trong repo folder |
+
+> ⚠️ **QUAN TRỌNG:** Đừng sửa hoặc xoá file trong `.ai-log/`. Đừng chạy `git push --no-verify` để bypass hook. Nếu hook báo lỗi, báo cho instructor thay vì tự bypass.
 
 ## Tóm tắt
 
